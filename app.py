@@ -3,6 +3,7 @@ from ultralytics import YOLO
 from PIL import Image
 import tempfile
 import os
+os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "0"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 st.set_page_config(page_title="Road Damage Detection", layout="centered")
@@ -65,4 +66,5 @@ if uploaded_file is not None:
 
     # Optional cleanup
     os.remove(temp_path)
+
 
