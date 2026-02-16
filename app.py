@@ -6,9 +6,10 @@ import os
 
 st.set_page_config(page_title="Road Damage Detection", layout="centered")
 
+# Load YOLO model (from repo root)
 @st.cache_resource
 def load_model():
-    return YOLO("D:\\OneDrive\\Desktop\\Damage\\best.pt")  # Make sure best.pt is in same folder
+    return YOLO("best.pt")   # best.pt must be in same repo folder
 
 model = load_model()
 
@@ -20,11 +21,11 @@ uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 if uploaded_file is not None:
     suffix = os.path.splitext(uploaded_file.name)[1]
 
-    # Safely read uploaded file
+    # Read uploaded file safely
     uploaded_file.seek(0)
     file_bytes = uploaded_file.read()
 
-    # Write to temp file with extension
+    # Save to temporary file
     temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
     temp_file.write(file_bytes)
     temp_file.flush()
@@ -32,12 +33,12 @@ if uploaded_file is not None:
 
     temp_path = temp_file.name
 
-    # Run prediction
+    # Run YOLO prediction
     results = model.predict(source=temp_path, conf=0.25)
 
     r = results[0]
     img = Image.fromarray(r.plot())
-    st.image(img, caption="Detection Result", use_column_width=True)
+    st.image(img, caption="Detection Result", use_container_width=True)
 
     if len(r.boxes) == 0:
         st.warning("No damage detected.")
@@ -53,7 +54,7 @@ if uploaded_file is not None:
                 cost = "₹2,000 – ₹5,000"
             elif area_ratio < 0.08:
                 severity = "Moderate"
-                cost = "₹5000 – ₹10,000"
+                cost = "₹5,000 – ₹10,000"
             else:
                 severity = "Severe"
                 cost = "₹10,000+"
@@ -61,4 +62,5 @@ if uploaded_file is not None:
             st.markdown(f"### 🛠 Severity: **{severity}**")
             st.markdown(f"### 💰 Estimated Repair Cost: **{cost}**")
 
-    # Do not delete temp file on Windows to avoid PermissionError
+    # Optional cleanup
+    os.remove(temp_path)
