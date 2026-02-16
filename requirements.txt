@@ -1,5 +1,8 @@
-ultralytics==8.2.0
-torch>=2.0.0
+ultralytics
+torch
+torchvision
 opencv-python-headless
 numpy
+pillow
+pyyaml
 streamlit
